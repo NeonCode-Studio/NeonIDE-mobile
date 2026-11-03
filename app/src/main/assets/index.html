@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NeonIDE Mobile</title>
+<style>
+:root{--bg:#0a0a12;--bg2:#10101c;--bg3:#191929;--line:#2a2a48;--tx:#e6e6ff;--mut:#7f7fa8;--ac:#00f0ff;--ac2:#ff2bd6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%}
+#top{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg2);border-bottom:1px solid var(--line)}
+#top b{color:var(--ac);flex:1;font-size:16px;letter-spacing:.12em;text-shadow:0 0 8px var(--ac),0 0 18px var(--acg)}#top b i{color:var(--ac2);font-style:normal;text-shadow:0 0 8px var(--ac2),0 0 18px var(--ac2g)}#top b small{color:var(--mut);font-size:10px;letter-spacing:.15em;text-shadow:none;text-transform:uppercase}#top{box-shadow:0 1px 14px var(--acs);border-bottom-color:var(--acs)}
+button{background:var(--bg3);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:7px 11px;font-size:14px}
+button.p{background:linear-gradient(135deg,var(--ac2),#7a2bff);border-color:var(--ac2);color:#fff;box-shadow:0 0 10px var(--ac2g);font-weight:600}button:active{box-shadow:0 0 10px var(--ac)}
+#main{flex:1;display:flex;min-height:0;position:relative}
+#side{width:200px;background:var(--bg2);border-right:1px solid var(--line);overflow:auto;flex-shrink:0}
+#side .h{padding:10px 12px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.08em;display:flex;justify-content:space-between;align-items:center}
+.f{padding:9px 12px;font-size:14px;display:flex;justify-content:space-between;border-left:3px solid transparent}
+.f.a{background:var(--bg3);border-left-color:var(--ac);color:var(--ac);text-shadow:0 0 6px var(--acg)}
+.f span.x{color:var(--mut);padding:0 4px}
+#ws{flex:1;display:flex;flex-direction:column;min-width:0}
+#tabs{display:flex;overflow-x:auto;background:var(--bg2);border-bottom:1px solid var(--line);flex-shrink:0}
+.t{padding:8px 14px;font-size:13px;color:var(--mut);white-space:nowrap;border-right:1px solid var(--line)}
+.t.a{color:var(--ac);background:var(--bg);box-shadow:inset 0 -2px var(--ac),0 2px 10px -2px var(--ac);text-shadow:0 0 6px var(--acg)}
+#ed{flex:1;position:relative;min-height:0;display:flex}
+#gut,#hl,#ta{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:var(--fs,13px);line-height:1.55;tab-size:var(--ts,2)}
+#gut{width:38px;padding:10px 6px 10px 0;text-align:right;color:#3d3d66;background:var(--bg);overflow:hidden;white-space:pre;user-select:none;flex-shrink:0}
+#box{position:relative;flex:1;min-width:0}
+#hl,#ta{position:absolute;inset:0;margin:0;padding:10px 12px;border:0;white-space:pre;overflow:auto;word-wrap:normal}
+#hl{pointer-events:none;overflow:hidden;color:var(--tx)}
+#ta{background:transparent;color:transparent;caret-color:var(--ac2);resize:none;outline:none;-webkit-text-fill-color:transparent}
+#ta::selection{background:var(--acs);-webkit-text-fill-color:transparent}
+#out{display:none;flex:0 0 42%;min-height:0;border-top:2px solid var(--ac2);box-shadow:0 -2px 14px var(--ac2g);background:#fff;flex-direction:column}
+#out.on{display:flex}
+#out .oh{background:var(--bg2);color:var(--mut);font-size:12px;padding:5px 10px;display:flex;justify-content:space-between}
+#out iframe{flex:1;border:0;background:#fff;width:100%}
+#out pre{flex:1;margin:0;padding:10px;background:#07070d;color:#b8ffe9;font:12px/1.5 ui-monospace,monospace;overflow:auto;white-space:pre-wrap}
+#keys{display:flex;gap:4px;overflow-x:auto;padding:5px;background:var(--bg2);border-top:1px solid var(--line)}
+#keys button{padding:6px 12px;font-family:monospace;font-size:15px;flex-shrink:0}
+.c{color:#5c5c8a;font-style:italic}.s{color:#39ff88}.k{color:var(--ac2)}.n{color:#ffb347}.tg{color:var(--ac)}.at{color:#fff35c}.pp{color:#ff5c8a}.ty{color:#7dffd9}
+@media(max-width:640px){#side{position:absolute;z-index:5;top:0;bottom:0;left:0;transform:translateX(-100%);transition:.2s;box-shadow:4px 0 18px var(--acs)}#side.open{transform:none}}
+
+body.nog *{text-shadow:none!important;box-shadow:none!important}
+#set{position:fixed;inset:0;z-index:20;background:var(--bg);display:none;flex-direction:column}
+#set.on{display:flex}
+#set .sh{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border-bottom:1px solid var(--ac);box-shadow:0 1px 14px var(--acs)}
+#set .sh b{color:var(--ac);letter-spacing:.1em;text-shadow:0 0 8px var(--acg)}
+#sb{flex:1;overflow:auto;padding:4px 14px 40px}
+#sb h3{color:var(--ac2);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:22px 0 4px;text-shadow:0 0 8px var(--ac2g)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row b{color:var(--ac);margin-left:6px}
+.row input[type=range]{width:46%;accent-color:var(--ac)}
+.row select{background:var(--bg3);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:7px}
+.sw{position:relative;width:46px;height:26px;flex-shrink:0}
+.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;z-index:1}
+.sw i{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--line);border-radius:13px;transition:.2s}
+.sw i:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--mut);transition:.2s}
+.sw input:checked+i{border-color:var(--ac);box-shadow:0 0 10px var(--acg)}
+.sw input:checked+i:after{left:23px;background:var(--ac);box-shadow:0 0 8px var(--ac)}
+.th{display:flex;gap:8px}.th button{width:34px;height:34px;border-radius:50%;padding:0;border:2px solid transparent}
+.th button.a{border-color:#fff;box-shadow:0 0 10px currentColor}
+#imp{width:100%;height:70px;background:var(--bg3);color:var(--tx);border:1px solid var(--line);border-radius:6px;margin-top:8px;font:12px monospace;padding:8px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0}
+.about{text-align:center;padding:24px 10px;margin-top:10px;border:1px solid var(--ac);border-radius:12px;box-shadow:0 0 18px var(--acs),inset 0 0 18px var(--acs)}
+.about .lg{font-size:24px;font-weight:700;letter-spacing:.14em;color:var(--ac);text-shadow:0 0 10px var(--ac),0 0 24px var(--acg)}
+.about .lg i{color:var(--ac2);font-style:normal;text-shadow:0 0 10px var(--ac2),0 0 24px var(--ac2g)}
+.about .v{color:var(--mut);font-size:12px;margin:6px 0 14px;letter-spacing:.1em}
+.about .mb{font-size:14px;color:var(--tx)}.about .mb b{color:var(--ac2);text-shadow:0 0 8px var(--ac2g)}
+.inf{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;text-align:left;font-size:12px;margin:16px 0 4px;color:var(--mut)}
+.inf span:nth-child(even){color:var(--tx);text-align:right}
+</style></head>
+<body><div id="app">
+<div id="top"><button id="bm">☰</button><b>NEON<i>IDE</i> <small>mobile</small></b><button id="bg" title="Ustawienia">⚙</button><button id="bs">Zapisz</button><button class="p" id="br">▶ Uruchom</button></div>
+<div id="main">
+ <div id="side"><div class="h">Pliki <button id="bn" style="padding:2px 9px">+</button></div><div id="fl"></div></div>
+ <div id="ws">
+  <div id="tabs"></div>
+  <div id="ed"><div id="gut"></div><div id="box"><pre id="hl"></pre><textarea id="ta" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea></div></div>
+  <div id="out"><div class="oh"><span id="ot">Podgląd</span><span id="oc">✕</span></div><iframe id="fr" sandbox="allow-scripts allow-modals"></iframe><pre id="op" style="display:none"></pre></div>
+  <div id="keys"></div>
+ </div>
+</div></div>
+<div id="set"><div class="sh"><button id="sx">←</button><b>USTAWIENIA</b></div><div id="sb"></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const DEF={"main.cpp":'#include <iostream>\nusing namespace std;\n\nint main() {\n  cout << "Witaj w NeonIDE!" << endl;\n  return 0;\n}\n',
+"index.html":'<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="utf-8">\n  <title>Test</title>\n  <style>\n    body { font-family: sans-serif; text-align: center; margin-top: 3rem; }\n  </style>\n</head>\n<body>\n  <h1>Cześć!</h1>\n  <button onclick="alert(\'Działa\')">Kliknij</button>\n</body>\n</html>\n'};
+let S;
+try{S=JSON.parse(localStorage.getItem('neon')||'null')}catch(e){}
+if(!S||!S.files)S={files:DEF,open:["main.cpp","index.html"],active:"main.cpp"};
+const save=()=>{try{localStorage.setItem('neon',JSON.stringify(S))}catch(e){}};
+const lang=n=>/\.(html?|htm)$/i.test(n)?'html':'cpp';
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function hl(t,re,cls){let o='',i=0,m;re.lastIndex=0;while((m=re.exec(t))){if(m[0]==='')break;o+=esc(t.slice(i,m.index));let k=1;while(m[k]===undefined)k++;o+='<span class="'+cls[k-1]+'">'+esc(m[0])+'</span>';i=m.index+m[0].length}return o+esc(t.slice(i))}
+const KW='alignas|auto|break|case|catch|class|const|constexpr|continue|default|delete|do|else|enum|explicit|extern|for|friend|goto|if|inline|namespace|new|noexcept|nullptr|operator|private|protected|public|return|sizeof|static|struct|switch|template|this|throw|try|typedef|typename|using|virtual|while|true|false';
+const TY='int|long|short|char|float|double|bool|void|unsigned|signed|string|vector|map|set|size_t|cout|cin|endl|std';
+const reC=new RegExp('(\\/\\/.*|\\/\\*[\\s\\S]*?(?:\\*\\/|$))|("(?:\\\\.|[^"\\\\\\n])*"?|\'(?:\\\\.|[^\'\\\\\\n])*\'?)|(^[ \\t]*#[ \\t]*\\w+)|\\b('+KW+')\\b|\\b('+TY+')\\b|\\b(\\d[\\w.]*)\\b','gm');
+const clC=['c','s','pp','k','ty','n'];
+const reH=/(<!--[\s\S]*?(?:-->|$))|("[^"]*"|'[^']*')|(<\/?[\w-]+|\/?>)|(\s[\w:-]+(?==))/g;
+const clH=['c','s','tg','at'];
+function render(){const f=S.active,t=$('ta').value;$('hl').innerHTML=(lang(f)==='html'?hl(t,reH,clH):hl(t,reC,clC))+'\n';
+ const n=t.split('\n').length;let g='';for(let i=1;i<=n;i++)g+=i+'\n';$('gut').textContent=g;sync()}
+function sync(){const a=$('ta');$('hl').scrollTop=a.scrollTop;$('hl').scrollLeft=a.scrollLeft;$('gut').scrollTop=a.scrollTop}
+function ui(){
+ $('tabs').innerHTML=S.open.map(n=>`<div class="t ${n===S.active?'a':''}" data-n="${esc(n)}">${esc(n)}</div>`).join('');
+ $('fl').innerHTML=Object.keys(S.files).sort().map(n=>`<div class="f ${n===S.active?'a':''}" data-n="${esc(n)}"><span>${esc(n)}</span><span class="x" data-d="${esc(n)}">✕</span></div>`).join('');
+ $('ta').value=S.files[S.active]||'';render()}
+function openF(n){if(!S.open.includes(n))S.open.push(n);S.active=n;save();ui();$('side').classList.remove('open')}
+$('tabs').onclick=e=>{const n=e.target.dataset.n;if(n){if(n===S.active&&S.open.length>1){S.open=S.open.filter(x=>x!==n);S.active=S.open[S.open.length-1];save();ui()}else openF(n)}};
+$('fl').onclick=e=>{const d=e.target.dataset.d;if(d){if(confirm('Usunąć '+d+'?')){delete S.files[d];S.open=S.open.filter(x=>x!==d);if(!S.open.length){S.files['untitled.cpp']=S.files['untitled.cpp']||'';S.open=['untitled.cpp']}if(S.active===d)S.active=S.open[0];save();ui()}return}
+ const f=e.target.closest('.f');if(f)openF(f.dataset.n)};
+$('bn').onclick=()=>{let n=prompt('Nazwa pliku (.cpp / .h / .html):','nowy.cpp');if(!n)return;n=n.trim();if(!/\.(cpp|cc|c|h|hpp|html?)$/i.test(n)){alert('Tylko pliki HTML i C++');return}
+ if(!S.files[n])S.files[n]=/\.html?$/i.test(n)?'<!DOCTYPE html>\n<html>\n<body>\n\n</body>\n</html>\n':'';openF(n)};
+$('bm').onclick=()=>$('side').classList.toggle('open');
+const ta=$('ta');
+ta.addEventListener('input',()=>{S.files[S.active]=ta.value;render();if(S.set.autosave){clearTimeout(window._t);window._t=setTimeout(save,500)}});
+ta.addEventListener('scroll',sync);
+function ins(s,back){const a=ta.selectionStart,b=ta.selectionEnd;ta.setRangeText(s,a,b,'end');if(back)ta.selectionStart=ta.selectionEnd=a+s.length-back;ta.dispatchEvent(new Event('input'));ta.focus()}
+const PAIR={'{':'}','(':')','[':']','"':'"',"'":"'"};
+ta.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();ins(U())}
+ else if(e.key==='Enter'){const v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf('\n',p-1)+1;let ind=(v.slice(ls,p).match(/^\s*/)||[''])[0];const pc=v[p-1];if(pc==='{'||(lang(S.active)==='html'&&v[p-1]==='>'&&/<(div|body|head|ul|ol|section|main|html|table|style|script)[^>]*>$/.test(v.slice(ls,p)))){e.preventDefault();const nx=v[p];if(pc==='{'&&nx==='}'){ins('\n'+ind+U()+'\n'+ind,ind.length+1)}else ins('\n'+ind+U())}else if(ind){e.preventDefault();ins('\n'+ind)}}});
+const KEYS=['Tab','{','}','(',')','[',']','<','>',';','"',"'",'=','/','#','&','|','*','!'];
+$('keys').innerHTML=KEYS.map(k=>`<button data-k="${esc(k)}">${esc(k)}</button>`).join('');
+$('keys').addEventListener('mousedown',e=>e.preventDefault());
+$('keys').onclick=e=>{const k=e.target.dataset.k;if(!k)return;if(k==='Tab')return ins(U());if(PAIR[k]&&S.set.ac&&'{(["\''.includes(k))ins(k+PAIR[k],1);else ins(k)};
+$('bs').onclick=()=>{save();$('bs').textContent='✓';setTimeout(()=>$('bs').textContent='Zapisz',900)};
+const out=$('out');
+$('oc').onclick=()=>out.classList.remove('on');
+function handleBack(){if($('set').classList.contains('on')){$('set').classList.remove('on');return true}if($('side').classList.contains('open')){$('side').classList.remove('open');return true}if(out.classList.contains('on')){out.classList.remove('on');return true}return false}
+$('br').onclick=()=>{save();const f=S.active,code=S.files[f];out.classList.add('on');
+ if(lang(f)==='html'){$('ot').textContent='Podgląd: '+f;$('fr').style.display='';$('op').style.display='none';$('fr').srcdoc=code}
+ else{$('ot').textContent='Wynik: '+f+' ('+S.set.compiler+')';$('fr').style.display='none';$('op').style.display='';$('op').textContent='Kompilacja…';
+  if(window.Android&&Android.runCpp)Android.runCpp(code,S.set.compiler);else onCppResult(JSON.stringify({compiler_error:'Uruchamianie C++ działa tylko w aplikacji Android.'}))}};
+function onCppResult(s){let r;try{r=JSON.parse(s)}catch(e){r={compiler_error:s}}
+ let t='';if(r.compiler_error)t+=r.compiler_error+'\n';if(r.program_output)t+=r.program_output;else if(r.program_error)t+=r.program_error;
+ if(r.status!==undefined)t+='\n— kod wyjścia: '+r.status;$('op').textContent=t||'(brak wyjścia)'}
+
+const APP={name:'NeonIDE Mobile',ver:'1.0.0',build:'2026.11.03',code:'NIM-100'};
+S.set=Object.assign({fs:13,ts:2,theme:'neon',glow:true,ln:true,keys:true,ac:true,autosave:true,compiler:'gcc-head'},S.set||{});
+const U=()=>' '.repeat(S.set.ts);
+const THEMES={neon:['#00f0ff','#ff2bd6'],toxic:['#39ff88','#00f0ff'],sunset:['#ffb347','#ff2bd6'],violet:['#b388ff','#00f0ff']};
+function applySet(){const s=S.set,r=document.documentElement.style,t=THEMES[s.theme]||THEMES.neon;
+ r.setProperty('--ac',t[0]);r.setProperty('--ac2',t[1]);r.setProperty('--acg',t[0]+'88');r.setProperty('--acs',t[0]+'33');r.setProperty('--ac2g',t[1]+'88');
+ r.setProperty('--fs',s.fs+'px');r.setProperty('--ts',s.ts);
+ document.body.classList.toggle('nog',!s.glow);
+ $('gut').style.display=s.ln?'':'none';$('keys').style.display=s.keys?'':'none';render()}
+const tg=(k,l)=>`<div class="row"><span>${l}</span><label class="sw"><input type="checkbox" data-s="${k}" ${S.set[k]?'checked':''}><i></i></label></div>`;
+function setUI(){const s=S.set;const names=Object.keys(S.files);const bytes=names.reduce((a,n)=>a+new Blob([S.files[n]]).size,0);
+ const ua=navigator.userAgent,an=(ua.match(/Android ([\d.]+)/)||[])[1]||'—',wv=(ua.match(/Chrome\/([\d.]+)/)||[])[1]||'—';
+ $('sb').innerHTML=`<h3>Edytor</h3>
+ <div class="row"><span>Rozmiar czcionki<b id="fsv">${s.fs}px</b></span><input type="range" min="10" max="22" value="${s.fs}" data-s="fs"></div>
+ <div class="row"><span>Szerokość tabulatora</span><select data-s="ts">${[2,4,8].map(n=>`<option ${n==s.ts?'selected':''}>${n}</option>`).join('')}</select></div>
+ ${tg('ln','Numery linii')}${tg('keys','Pasek znaków nad klawiaturą')}${tg('ac','Autozamykanie nawiasów i cudzysłowów')}${tg('autosave','Autozapis')}
+ <h3>Wygląd</h3>
+ <div class="row"><span>Motyw kolorystyczny</span><div class="th">${Object.keys(THEMES).map(k=>`<button data-th="${k}" class="${k===s.theme?'a':''}" style="background:linear-gradient(135deg,${THEMES[k][0]} 50%,${THEMES[k][1]} 50%);color:${THEMES[k][0]}"></button>`).join('')}</div></div>
+ ${tg('glow','Neonowa poświata')}
+ <h3>Kompilator C++</h3>
+ <div class="row"><span>Kompilator zdalny</span><select data-s="compiler">${['gcc-head','clang-head'].map(c=>`<option ${c===s.compiler?'selected':''}>${c}</option>`).join('')}</select></div>
+ <h3>Dane</h3>
+ <div class="btns"><button id="bx">Kopiuj kopię zapasową</button><button id="br2">Przywróć z wklejonej</button><button id="bz" style="color:#ff5c8a">Resetuj aplikację</button></div>
+ <textarea id="imp" placeholder="Wklej tutaj kopię zapasową (JSON)…"></textarea>
+ <h3>Informacje</h3>
+ <div class="about"><div class="lg">NEON<i>IDE</i></div><div class="v">MOBILE · WERSJA ${APP.ver}</div>
+  <div class="mb">Made by <b>Neon</b> · <b>NeonCode Studio</b></div>
+  <div class="inf"><span>Wersja</span><span>${APP.ver}</span><span>Kompilacja</span><span>${APP.build}</span><span>Kod wydania</span><span>${APP.code}</span>
+  <span>Języki</span><span>HTML, C++</span><span>Pliki w projekcie</span><span>${names.length} (${(bytes/1024).toFixed(1)} KB)</span>
+  <span>Android</span><span>${an}</span><span>WebView</span><span>${wv}</span></div>
+  <div style="color:var(--mut);font-size:11px;margin-top:14px">© 2026 NeonCode Studio. Wszelkie prawa zastrzeżone.</div></div>`}
+function copyTxt(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}a.remove();return ok}
+$('bg').onclick=()=>{setUI();$('set').classList.add('on')};
+$('sx').onclick=()=>$('set').classList.remove('on');
+$('sb').addEventListener('input',e=>{const k=e.target.dataset.s;if(!k)return;const el=e.target;
+ S.set[k]=el.type==='checkbox'?el.checked:(k==='fs'||k==='ts')?Number(el.value):el.value;
+ if(k==='fs')$('fsv').textContent=S.set.fs+'px';save();applySet()});
+$('sb').addEventListener('click',e=>{const t=e.target;
+ if(t.dataset.th){S.set.theme=t.dataset.th;save();applySet();setUI()}
+ else if(t.id==='bx'){const ok=copyTxt(JSON.stringify({app:APP.code,files:S.files}));t.textContent=ok?'Skopiowano ✓':'Nie udało się skopiować';setTimeout(()=>t.textContent='Kopiuj kopię zapasową',1500)}
+ else if(t.id==='br2'){try{const d=JSON.parse($('imp').value);if(!d.files||typeof d.files!=='object')throw 0;
+   Object.keys(d.files).forEach(n=>{if(/\.(cpp|cc|c|h|hpp|html?)$/i.test(n)&&typeof d.files[n]==='string')S.files[n]=d.files[n]});save();ui();setUI();alert('Przywrócono pliki.')}catch(x){alert('Nieprawidłowa kopia zapasowa.')}}
+ else if(t.id==='bz'){if(confirm('Usunąć wszystkie pliki i ustawienia?')){try{localStorage.removeItem('neon')}catch(x){}location.reload()}}});
+applySet();
+ui();
+</script></body></html>
