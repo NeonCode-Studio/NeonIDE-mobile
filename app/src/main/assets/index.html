@@ -3,13 +3,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#174EA6"><title>NeonIDE Mobile</title>
 <style>
-:root{--bg2:#0b0b0b;--bg3:#161616;--ln:#3d3d3d;--b:#174EA6;--o:#E37400;--mut:#a0a0a0;--fs:14px;--ts:2}
+:root{--bg2:#000;--bg3:#000;--ln:#6FC3DF;--b:#174EA6;--o:#E37400;--mut:#d4d4d4;--fs:14px;--ts:2}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#000;color:#fff;font:14px system-ui,Roboto,sans-serif;overflow:hidden}
 #app{display:flex;flex-direction:column;height:100%}
 button{font:inherit;color:#fff;background:var(--bg3);border:1px solid var(--ln);border-radius:4px;padding:6px 11px}
 button:active{background:var(--b)}
-#top{display:flex;align-items:center;gap:2px;height:48px;padding:0 6px;background:var(--b);flex-shrink:0}
+#top{display:flex;align-items:center;gap:2px;height:48px;padding:0 6px;background:var(--b);flex-shrink:0;border-bottom:1px solid #fff}
 #top button{background:0;border:0;font-size:18px;padding:8px 10px}
 #ttl{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}
 #top .run{background:var(--o);color:#000;font-size:14px;font-weight:700;padding:8px 14px;margin-left:4px}
@@ -20,7 +20,7 @@ button:active{background:var(--b)}
 .sh{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;font-size:11px;letter-spacing:.08em;color:var(--mut)}
 #fl{flex:1;overflow:auto}
 .f{display:flex;align-items:center;gap:8px;padding:10px 10px;border-left:3px solid transparent}
-.f.a{background:var(--bg3);border-left-color:var(--o)}
+.f.a{outline:2px solid var(--o);outline-offset:-2px;border-left-color:var(--o)}
 .f .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .f .g{font-size:9px;font-weight:700;padding:2px 4px;border-radius:3px;color:#000}
 .f .x{color:var(--mut);padding:2px 7px;font-size:15px}
@@ -28,19 +28,20 @@ button:active{background:var(--b)}
 #ws{flex:1;display:flex;flex-direction:column;min-width:0}
 #tabs{display:flex;overflow-x:auto;background:var(--bg2);border-bottom:1px solid var(--ln);flex-shrink:0;scrollbar-width:none}
 .t{padding:9px 14px;color:var(--mut);white-space:nowrap;border-right:1px solid var(--ln);border-top:2px solid transparent}
-.t.a{color:#fff;background:#000;border-top-color:var(--o)}.t .x{margin-left:8px}
+.t.a{color:#fff;background:#000;border-top-color:var(--o);box-shadow:inset 0 0 0 1px var(--o)}.t .x{margin-left:8px}
 #find{display:none;gap:4px;padding:6px;background:var(--bg3);border-bottom:1px solid var(--ln);flex-wrap:wrap}#find.on{display:flex}
 #find input{flex:1;min-width:110px;background:#000;color:#fff;border:1px solid var(--ln);border-radius:4px;padding:6px 8px;font:inherit}
 #find input:focus{border-color:var(--o);outline:0}#fc{align-self:center;color:var(--mut);font-size:12px;min-width:48px}
 #ed{flex:1;display:flex;min-height:0}
 #gut,#hl,#ta{font-family:ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;font-size:var(--fs);line-height:1.5;tab-size:var(--ts)}
-#gut{width:42px;padding:10px 8px 60px 0;text-align:right;color:#8a8a8a;overflow:hidden;white-space:pre;user-select:none;flex-shrink:0;border-right:1px solid #222}
+#gut{width:42px;padding:10px 8px 60px 0;text-align:right;color:#e6e6e6;overflow:hidden;white-space:pre;user-select:none;flex-shrink:0;border-right:1px solid var(--ln)}
 #box{position:relative;flex:1;min-width:0}
 #hl,#ta{position:absolute;inset:0;margin:0;padding:10px 12px 60px;border:0;white-space:pre;overflow:auto;word-wrap:normal}
 #hl{overflow:hidden;pointer-events:none}
 #ta{background:0;color:transparent;-webkit-text-fill-color:transparent;caret-color:var(--o);resize:none;outline:0}
+button:focus-visible,select:focus{outline:2px solid var(--o)}
 #ta::selection{background:#174EA6cc}
-#pan{display:none;flex:0 0 45%;min-height:0;flex-direction:column;border-top:2px solid var(--b)}
+#pan{display:none;flex:0 0 45%;min-height:0;flex-direction:column;border-top:2px solid var(--ln)}
 #pan.on{display:flex}#pan.max{flex:1 1 100%}
 #ph{display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--ln)}
 #ph .pt{padding:8px 14px;color:var(--mut);border-bottom:2px solid transparent}#ph .pt.a{color:#fff;border-bottom-color:var(--o)}
@@ -53,11 +54,11 @@ button:active{background:var(--b)}
 #sug button{flex-shrink:0;padding:5px 10px;border-color:var(--o);color:var(--o)}
 #keys{display:flex;gap:4px;overflow-x:auto;padding:5px;background:var(--bg2);border-top:1px solid var(--ln);scrollbar-width:none}
 #keys button{flex-shrink:0;min-width:38px;padding:7px 10px;font:15px ui-monospace,monospace}
-#st{display:flex;gap:16px;align-items:center;height:26px;padding:0 10px;background:var(--b);font-size:12px;flex-shrink:0}
+#st{display:flex;gap:16px;align-items:center;height:26px;padding:0 10px;background:var(--b);font-size:13px;flex-shrink:0;border-top:1px solid #fff}
 #st span:first-child{flex:1}
 .c{color:#7ca668}.s{color:#ce9178}.k,.tg{color:#569cd6}.n{color:#b5cea8}.at{color:#9cdcfe}.pp{color:#c586c0}.ty{color:#4ec9b0}.fn{color:#dcdcaa}
 #set{position:fixed;inset:0;z-index:20;background:#000;display:none;flex-direction:column}#set.on{display:flex}
-#set .hd{display:flex;align-items:center;gap:10px;padding:0 8px;height:48px;background:var(--b);font-weight:600}
+#set .hd{display:flex;align-items:center;gap:10px;padding:0 8px;height:48px;background:var(--b);font-weight:600;border-bottom:1px solid #fff}
 #set .hd button{background:0;border:0;font-size:20px}
 #sb{flex:1;overflow:auto;padding:4px 14px 40px}
 #sb h3{color:var(--o);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin:22px 0 4px}
@@ -71,7 +72,7 @@ button:active{background:var(--b)}
 .sw input:checked+i{background:var(--o);border-color:var(--o)}.sw input:checked+i:after{left:23px;background:#000}
 .btns{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0}
 #imp{width:100%;height:64px;background:var(--bg3);color:#fff;border:1px solid var(--ln);border-radius:4px;font:12px monospace;padding:8px}
-.about{margin-top:8px;padding:20px 14px;border:1px solid var(--b);border-radius:6px;text-align:center}
+.about{margin-top:8px;padding:20px 14px;border:1px solid var(--ln);border-radius:6px;text-align:center}
 .about .lg{font-size:22px;font-weight:700;letter-spacing:.08em}.about .lg i{color:var(--o);font-style:normal}
 .about .v{color:var(--mut);font-size:12px;margin:4px 0 12px}.about .mb b{color:var(--o)}
 .inf{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px;margin:14px 0 0;color:var(--mut);text-align:left}
@@ -96,7 +97,7 @@ button:active{background:var(--b)}
 <div id="set"><div class="hd"><button id="sx">←</button>Ustawienia</div><div id="sb"></div></div>
 <script>
 const $=id=>document.getElementById(id),ta=$('ta');
-const APP={ver:'2.0.0',build:'2026.11.07',code:'NIM-200'};
+const APP={ver:'2.0.1',build:'2026.11.07',code:'NIM-201'};
 const DEF={"main.cpp":'#include <iostream>\nusing namespace std;\n\nint main() {\n  cout << "Witaj w NeonIDE!" << endl;\n  return 0;\n}\n',
 "index.html":'<!DOCTYPE html>\n<html lang="pl">\n<head>\n  <meta charset="UTF-8">\n  <title>Test</title>\n  <style>\n    body { font-family: sans-serif; text-align: center; margin-top: 3rem; }\n  </style>\n</head>\n<body>\n  <h1>Cześć!</h1>\n  <button onclick="console.log(\'Kliknięto\')">Kliknij</button>\n</body>\n</html>\n'};
 let S;try{S=JSON.parse(localStorage.getItem('nide')||localStorage.getItem('neon')||'null')}catch(e){}

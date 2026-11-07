@@ -2,6 +2,11 @@ package pl.codenote;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.widget.EditText;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -28,6 +33,28 @@ public class MainActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         web.setWebViewClient(new WebViewClient());
+        web.setWebChromeClient(new WebChromeClient() {
+            AlertDialog.Builder dlg(String msg) {
+                return new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_DeviceDefault_Dialog_Alert).setMessage(msg);
+            }
+            @Override public boolean onJsAlert(WebView v, String u, String m, final JsResult r) {
+                dlg(m).setPositiveButton("OK", (d, w) -> r.confirm()).setOnCancelListener(d -> r.cancel()).show();
+                return true;
+            }
+            @Override public boolean onJsConfirm(WebView v, String u, String m, final JsResult r) {
+                dlg(m).setPositiveButton("OK", (d, w) -> r.confirm()).setNegativeButton("Anuluj", (d, w) -> r.cancel())
+                    .setOnCancelListener(d -> r.cancel()).show();
+                return true;
+            }
+            @Override public boolean onJsPrompt(WebView v, String u, String m, String def, final JsPromptResult r) {
+                final EditText et = new EditText(MainActivity.this);
+                et.setText(def);
+                et.setSingleLine(true);
+                dlg(m).setView(et).setPositiveButton("OK", (d, w) -> r.confirm(et.getText().toString()))
+                    .setNegativeButton("Anuluj", (d, w) -> r.cancel()).setOnCancelListener(d -> r.cancel()).show();
+                return true;
+            }
+        });
         web.addJavascriptInterface(new Bridge(), "Android");
         web.loadUrl("file:///android_asset/index.html");
     }
