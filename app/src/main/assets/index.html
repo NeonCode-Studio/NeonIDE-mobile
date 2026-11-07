@@ -45,6 +45,9 @@ button:focus-visible,select:focus{outline:2px solid var(--o)}
 .pi.a{outline:2px solid var(--o);outline-offset:-2px;background:#0a1a38}
 .pi .ic{font-size:10px;font-weight:700;background:var(--b);border-radius:3px;padding:2px 5px;min-width:26px;text-align:center}
 .pi .dt{color:var(--mut);overflow:hidden;text-overflow:ellipsis;font-size:12px}
+#tr{display:none;align-items:center;gap:6px;border-top:1px solid var(--ln);padding:4px 8px}#tr.on{display:flex}#tr b{color:var(--o);font-size:16px}
+#ti{flex:1;min-width:0;background:#000;color:#fff;border:0;font:14px ui-monospace,Menlo,monospace;outline:0;padding:8px 4px}
+.in{color:var(--o)}.dim{color:var(--mut)}
 #ta::selection{background:#174EA6cc}
 #pan{display:none;flex:0 0 45%;min-height:0;flex-direction:column;border-top:2px solid var(--ln)}
 #pan.on{display:flex}#pan.max{flex:1 1 100%}
@@ -91,9 +94,9 @@ button:focus-visible,select:focus{outline:2px solid var(--o)}
   <div id="tabs"></div>
   <div id="find"><input id="fi" placeholder="Znajdź"><input id="ri" placeholder="Zamień na"><button id="fp">▲</button><button id="fn">▼</button><button id="r1">Zamień</button><button id="ra">Wszystkie</button><span id="fc"></span></div>
   <div id="ed"><div id="gut"></div><div id="box"><pre id="hl"></pre><textarea id="ta" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea><div id="pop"></div></div></div>
-  <div id="pan" data-t="pv"><div id="ph"><span class="pt a" id="tp">Podgląd</span><span class="pt" id="tc">Konsola</span><span class="sp"></span><button id="pm">⤢</button><button id="px">✕</button></div>
+  <div id="pan" data-t="pv"><div id="ph"><span class="pt a" id="tp">Podgląd</span><span class="pt" id="tc">Terminal</span><span class="sp"></span><button id="pm">⤢</button><button id="px">✕</button></div>
    <iframe id="fr" sandbox="allow-scripts allow-modals"></iframe>
-   <div id="cv"><pre id="co"></pre><textarea id="si" placeholder="Dane wejściowe programu (stdin)"></textarea></div></div>
+   <div id="cv"><pre id="co"></pre><div id="tr"><b>›</b><input id="ti" enterkeyhint="send" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="wpisz dane i Enter"><button id="te">↵</button><button id="td" title="Koniec danych (EOF)">^D</button></div></div></div>
   <div id="keys"></div>
  </section>
 </div>
@@ -102,7 +105,7 @@ button:focus-visible,select:focus{outline:2px solid var(--o)}
 <div id="set"><div class="hd"><button id="sx">←</button>Ustawienia</div><div id="sb"></div></div>
 <script>
 const $=id=>document.getElementById(id),ta=$('ta');
-const APP={ver:'2.1.0',build:'2026.11.07',code:'NIM-210'};
+const APP={ver:'2.2.0',build:'2026.11.07',code:'NIM-220'};
 const DEF={"main.cpp":'#include <iostream>\nusing namespace std;\n\nint main() {\n  cout << "Witaj w NeonIDE!" << endl;\n  return 0;\n}\n',
 "index.html":'<!DOCTYPE html>\n<html lang="pl">\n<head>\n  <meta charset="UTF-8">\n  <title>Test</title>\n  <style>\n    body { font-family: sans-serif; text-align: center; margin-top: 3rem; }\n  </style>\n</head>\n<body>\n  <h1>Cześć!</h1>\n  <button onclick="console.log(\'Kliknięto\')">Kliknij</button>\n</body>\n</html>\n'};
 let S;try{S=JSON.parse(localStorage.getItem('nide')||localStorage.getItem('neon')||'null')}catch(e){}
@@ -235,16 +238,36 @@ $('ra').onclick=()=>{if(!fi.value)return;ta.focus();ta.select();ins(ta.value.rep
 $('pos').onclick=()=>{const n=parseInt(prompt('Przejdź do linii:'),10);if(n>0){const ls=ta.value.split('\n');let p=0;for(let i=0;i<Math.min(n-1,ls.length-1);i++)p+=ls[i].length+1;ta.focus();ta.setSelectionRange(p,p);reveal(p)}};
 /* run */
 const BR='<script>(function(){var s=function(t,a){parent.postMessage({nide:t,m:[].slice.call(a).map(String).join(" ")},"*")};["log","warn","error"].forEach(function(k){var o=console[k];console[k]=function(){s(k,arguments);o.apply(console,arguments)}});onerror=function(m,u,l){s("error",[m+" (linia "+l+")"])}})()<\/script>';
-function tab(t){$('pan').dataset.t=t;$('tp').classList.toggle('a',t==='pv');$('tc').classList.toggle('a',t==='co');if(t==='co')$('tc').textContent='Konsola'}
+function tab(t){$('pan').dataset.t=t;$('tp').classList.toggle('a',t==='pv');$('tc').classList.toggle('a',t==='co');if(t==='co')$('tc').textContent='Terminal'}
 $('tp').onclick=()=>tab('pv');$('tc').onclick=()=>tab('co');$('px').onclick=()=>$('pan').classList.remove('on');$('pm').onclick=()=>$('pan').classList.toggle('max');
-addEventListener('message',e=>{const d=e.data;if(d&&d.nide){$('co').textContent+=(d.nide==='error'?'✖ ':d.nide==='warn'?'⚠ ':'› ')+d.m+'\n';if($('pan').dataset.t!=='co')$('tc').textContent='Konsola •'}});
+addEventListener('message',e=>{const d=e.data;if(d&&d.nide){$('co').insertAdjacentText('beforeend',(d.nide==='error'?'✖ ':d.nide==='warn'?'⚠ ':'› ')+d.m+'\n');if($('pan').dataset.t!=='co')$('tc').textContent='Terminal •'}});
 $('br').onclick=()=>{save();const f=S.active,c=S.files[f];$('pan').classList.add('on');
- if(lang(f)==='html'){tab('pv');$('co').textContent='';$('fr').srcdoc=BR+c}
- else{tab('co');$('co').textContent='Kompilacja '+f+' ('+S.set.compiler+')…';
-  if(window.Android&&Android.runCpp)Android.runCpp(c,S.set.compiler,$('si').value);else onCppResult(JSON.stringify({compiler_error:'Uruchamianie C++ działa tylko w aplikacji Android.'}))}};
+ if(lang(f)==='html'){tab('pv');T.waiting=false;$('tr').classList.remove('on');$('co').textContent='';$('fr').srcdoc=BR+c}
+ else{tab('co');T.inp=[];T.eof=false;T.code=c;T.html='';exec()}};
+const PRE=['#include <iostream>','#include <cstdio>','#include <cstdlib>','#include <cstring>',
+'struct NeonBuf__:std::streambuf{char b[4096];int underflow()override{if(gptr()<egptr())return traits_type::to_int_type(*gptr());std::cout.flush();',
+'if(!std::fgets(b,sizeof b,stdin)){','#ifdef NEON_EOF','return traits_type::eof();','#else',
+'std::fputs("\\001NEED\\001",stdout);std::fflush(stdout);std::_Exit(0);','#endif','}',
+'std::fputs("\\001IN\\001",stdout);std::fflush(stdout);setg(b,b,b+std::strlen(b));return traits_type::to_int_type(*gptr());}};',
+'static NeonBuf__ neonbuf__;static struct NeonInit__{NeonInit__(){std::cin.rdbuf(&neonbuf__);}} neoninit__;',
+'#define sync_with_stdio(x) sync_with_stdio(true)','#line 1',''].join('\n');
+const T={inp:[],eof:false,code:'',html:'',waiting:false};
+function exec(){T.waiting=false;$('tr').classList.remove('on');$('co').innerHTML=T.html+'<span class="dim">…</span>';
+ const src=(T.eof?'#define NEON_EOF 1\n':'')+PRE+T.code,stdin=T.inp.join('');
+ if(window.Android&&Android.runCpp)Android.runCpp(src,S.set.compiler,stdin);else onCppResult(JSON.stringify({compiler_error:'Uruchamianie C++ działa tylko w aplikacji Android.'}))}
+function submitIn(){if(!T.waiting)return;const v=$('ti').value;$('ti').value='';T.inp.push(v+'\n');T.html+='<span class="in">'+esc(v)+'</span>\n';exec()}
+$('te').onclick=submitIn;$('ti').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submitIn()}};
+$('td').onclick=()=>{if(!T.waiting)return;T.eof=true;T.html+='<span class="dim">^D</span>\n';exec()};
 function onCppResult(s){let r;try{r=JSON.parse(s)}catch(e){r={compiler_error:s}}
- let t=(r.compiler_error||r.compiler_message||'');if(t&&!t.endsWith('\n'))t+='\n';t+=(r.program_output||'')+(r.program_error||'');
- if(r.status!==undefined)t+='\n[Zakończono, kod: '+r.status+']';$('co').textContent=t||'(brak wyjścia)'}
+ const co=$('co');if(r.compiler_error){T.html='';co.textContent=r.compiler_error;return}
+ let o=r.program_message!==undefined?r.program_message:(r.program_output||'')+(r.program_error||'');
+ const M1='\u0001NEED\u0001',M2='\u0001IN\u0001',wait=o.includes(M1);o=o.replace(M1,'');
+ const parts=o.split(M2);let h=esc(parts[0]);
+ for(let i=1;i<parts.length;i++)h+='<span class="in">'+esc((T.inp[i-1]||'').replace(/\n$/,''))+'</span>\n'+esc(parts[i]);
+ T.html=h;
+ if(wait){T.waiting=true;co.innerHTML=h;$('tr').classList.add('on');$('ti').focus()}
+ else co.innerHTML=h+(h?'\n':'')+'<span class="dim">[Zakończono, kod: '+(r.status===undefined?'?':r.status)+']</span>';
+ co.scrollTop=co.scrollHeight}
 function handleBack(){const c=(id,cl)=>$(id).classList.contains(cl);
  if(c('set','on')){$('set').classList.remove('on');return true}if(c('side','open')){side(false);return true}
  if(c('find','on')){$('find').classList.remove('on');return true}if(c('pan','on')){$('pan').classList.remove('on');return true}return false}
